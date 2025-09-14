@@ -67,7 +67,7 @@ jobs:
             -H "X-GitHub-Api-Version: 2022-11-28" \
             /repos/${{ github.repository }}/git/tags \
             -f 'tag=test-tagging' \
-            -f 'message='This is body' \
+            -f 'message="This is body"' \
             -f 'object=${{ steps.commit.outputs.commit }}' \
             -f 'type=commit' \
             -f 'tagger[name]=${{ steps.bot-config.outputs.user_name }}' \
