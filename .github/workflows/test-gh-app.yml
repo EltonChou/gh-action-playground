@@ -73,7 +73,7 @@ jobs:
             -f 'type=commit' \
             -f 'tagger[name]=${{ steps.bot-config.outputs.user_name }}' \
             -f 'tagger[email]=${{ steps.bot-config.outputs.user_email }}' \
-            -f 'tagger[date]=$date'
+            -f 'tagger[date]='$date
 
           gh api \
             --method POST \
