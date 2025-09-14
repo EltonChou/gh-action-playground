@@ -25,12 +25,13 @@ jobs:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
 
       - name: Configure git
+        id: bot-config
         shell: bash
         run: |
           user_name="${{ steps.app-token.outputs.app-slug }}[bot]"
           user_email="${{ steps.get-user-id.outputs.user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com"
-          echo "bot_user_name=$user_name" >> "$GITHUB_OUTPUT"
-          echo "bot_user_email=$user_email" >> "$GITHUB_OUTPUT"
+          echo "user_name=$user_name" >> "$GITHUB_OUTPUT"
+          echo "user_email=$user_email" >> "$GITHUB_OUTPUT"
           git config --global user.name $user_name
           git config --global user.email $user_email
 
@@ -49,22 +50,35 @@ jobs:
         with:
           ref: refs/tags/v0.0.1
           token: ${{ steps.app-token.outputs.token }}
+          files: |
+            run-id.txt
           message: |
             ci: Test [skip ci]
 
             This is body
-          files: |
-            run-id.txt
 
       - name: Create Tag
+        shell: bash
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
-          curl -X POST \
-            -H "Authorization: Bearer ${{ steps.app-token.outputs.token }}" \
+          gh api \
+            --method POST \
             -H "Accept: application/vnd.github+json" \
-            https://api.github.com/repos/${{ github.repository }}/git/refs \
-            -d @- <<EOF
-          {
-            "ref": "refs/tags/v0.0.1",
-            "sha": "${{ steps.commit.outputs.commit }}"
-          }
-          EOF
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            /repos/${{ github.repository }}/git/tags \
+            -f 'tag=test-tagging' \
+            -f 'message='This is body' \
+            -f 'object=${{ steps.commit.outputs.commit }}' \
+            -f 'type=commit' \
+            -f 'tagger[name]=${{ steps.bot-config.outputs.user_name }}' \
+            -f 'tagger[email]=${{ steps.bot-config.outputs.user_email }}' \
+            -f 'tagger[date]=$(date --iso-8601=seconds)'
+
+          gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            /repos/${{ github.repository }}/git/refs \
+            -f 'ref=refs/tags/test-tagging' \
+            -f 'sha=${{ steps.commit.outputs.commit }}'
