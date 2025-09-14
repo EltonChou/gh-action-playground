@@ -41,7 +41,14 @@ jobs:
 
       - shell: bash
         run: |
-          echo "${{ github.run_id }}" > run-id.txt
-          git add run-id.txt
-          git commit -m "Add run ID [skip ci]"
-          git push origin main
+          echo ${{ github.run_id}} > run-id.txt
+
+      - name: Commit changes
+        uses: iarekylew00t/verified-bot-commit@v2
+        with:
+          message: |
+            ci: Test [skip ci]
+
+            This is body
+          files: |
+            run_id.txt
