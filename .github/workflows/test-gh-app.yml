@@ -1,0 +1,31 @@
+name: Build create-gecko-release action
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Setup git
+        id: setup-git
+        uses: ./.github/actions/setup-git-as-bot
+        with:
+          app-id: ${{ vars.APP_ID }}
+          app-private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          token: ${{ steps.setup-git.outputs.token }}
+
+      - shell: bash
+        run: |
+          echo "${{ github.run_id }}" >> run-id.txt
+          git add run-id.txt
+          git commit -m "Add run ID"
+          git push origin main
