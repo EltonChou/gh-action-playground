@@ -51,4 +51,4 @@ jobs:
 
             This is body
           files: |
-            run_id.txt
+            run-id.txt
