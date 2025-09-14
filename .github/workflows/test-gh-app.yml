@@ -44,6 +44,7 @@ jobs:
           echo ${{ github.run_id}} > run-id.txt
 
       - name: Commit changes
+        id: commit
         uses: iarekylew00t/verified-bot-commit@v2
         with:
           ref: refs/tags/v0.0.1
@@ -54,3 +55,16 @@ jobs:
             This is body
           files: |
             run-id.txt
+
+      - name: Create Tag
+        run: |
+          curl -X POST \
+            -H "Authorization: Bearer ${{ steps.app-token.outputs.token }}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/${{ github.repository }}/git/refs \
+            -d @- <<EOF
+          {
+            "ref": "refs/tags/v0.0.1",
+            "sha": "${{ steps.commit.outputs.commit }}"
+          }
+          EOF
