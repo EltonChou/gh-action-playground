@@ -2,7 +2,7 @@ name: Build create-gecko-release action
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch: {}
 
 jobs:
@@ -11,6 +11,9 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
       - name: Setup git
         id: setup-git
         uses: ./.github/actions/setup-git-as-bot
