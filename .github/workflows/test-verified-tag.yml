@@ -25,5 +25,7 @@ jobs:
         with:
           tag: "test-tag-${{ github.run_number }}"
           message: "Test"
+          git-user-name: ${{ steps.setup-git.outputs.user-name }}
+          git-user-email: ${{ steps.setup-git.outputs.user-email }}
         env:
           GH_TOKEN: ${{ steps.setup-git.outputs.token }}
