@@ -1,0 +1,25 @@
+name: Build create-gecko-release action
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: none
+    steps:
+      - name: Setup git for github app
+        id: setup-git
+        uses: EltonChou/setup-git-as-github-app@v1
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Create verfied tag
+        uses: EltonChou/create-verified-tag@main
+        with:
+          tag: "test-tag-${{ github.run_number }}"
+          message: "Test"
+        env:
+          GH_TOKEN: ${{ steps.setup-git.outputs.token }}
