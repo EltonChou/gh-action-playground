@@ -27,5 +27,6 @@ jobs:
           message: "Test"
           git-user-name: ${{ steps.setup-git.outputs.user-name }}
           git-user-email: ${{ steps.setup-git.outputs.user-email }}
+          github-token: ${{ steps.setup-git.outputs.token }}
         env:
           GH_TOKEN: ${{ steps.setup-git.outputs.token }}
