@@ -1,5 +1,4 @@
-name: Build create-gecko-release action
-
+name: Test create-verified-tag action
 on:
   workflow_dispatch: {}
 
@@ -9,6 +8,11 @@ jobs:
     permissions:
       contents: none
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Setup git for github app
         id: setup-git
         uses: EltonChou/setup-git-as-github-app@v1
