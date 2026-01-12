@@ -6,10 +6,12 @@ permissions:
   contents: write
 
 jobs:
-  build:
+  sign-tag:
     runs-on: ubuntu-latest
     permissions:
       contents: none
+    outputs:
+      tag: ${{ steps.sign-tag.outputs.tag }}
     steps:
       - name: Setup git for github app
         id: setup-git
@@ -25,6 +27,7 @@ jobs:
           fetch-depth: 0
 
       - name: Create signed tag
+        id: sign-tag
         uses: EltonChou/create-verified-tag@main
         with:
           tag: "test-tag-${{ github.run_number }}"
@@ -34,3 +37,20 @@ jobs:
           github-token: ${{ steps.setup-git.outputs.token }}
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
+
+  verify-tag:
+    runs-on: ubuntu-latest
+    needs:
+      - sign-tag
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify signed tag
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        run: |
+          echo "$GPG_PRIVATE_KEY" | gpg --batch --import
+          git verify-tag ${{ needs.sign-tag.outputs.tag }}
