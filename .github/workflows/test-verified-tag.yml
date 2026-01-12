@@ -2,6 +2,9 @@ name: Test create-verified-tag action
 on:
   workflow_dispatch: {}
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -20,7 +23,7 @@ jobs:
           app-id: ${{ vars.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
-      - name: Create verfied tag
+      - name: Create signed tag
         uses: EltonChou/create-verified-tag@main
         with:
           tag: "test-tag-${{ github.run_number }}"
