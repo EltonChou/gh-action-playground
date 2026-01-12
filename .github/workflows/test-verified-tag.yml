@@ -11,17 +11,18 @@ jobs:
     permissions:
       contents: none
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
       - name: Setup git for github app
         id: setup-git
         uses: EltonChou/setup-git-as-github-app@v1
         with:
           app-id: ${{ vars.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ steps.setup-git.outputs.token }}
+          fetch-depth: 0
 
       - name: Create signed tag
         uses: EltonChou/create-verified-tag@main
