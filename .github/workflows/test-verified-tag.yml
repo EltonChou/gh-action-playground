@@ -50,7 +50,7 @@ jobs:
           TAG=test-tag-${{ github.run_number }}
           git tag -s $TAG -m "This is a test tag"
           git push origin $TAG
-          echo "tag=$TAG" >> $GIT_OUTPUT
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
   verify-tag:
     runs-on: ubuntu-latest
