@@ -32,8 +32,10 @@ jobs:
         with:
           tag: "test-tag-${{ github.run_number }}"
           message: "Test"
-          git-user-name: ${{ steps.setup-git.outputs.user-name }}
-          git-user-email: ${{ steps.setup-git.outputs.user-email }}
+          git-user-name: ${{ github.actor }}
+          git-user-email: "plscd748@gmail.com"
+          # git-user-name: ${{ steps.setup-git.outputs.user-name }}
+          # git-user-email: ${{ steps.setup-git.outputs.user-email }}
           github-token: ${{ steps.setup-git.outputs.token }}
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
