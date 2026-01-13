@@ -48,7 +48,7 @@ jobs:
         shell: bash
         run: |
           TAG=test-tag-${{ github.run_number }}
-          git tag -s $TAG
+          git tag -s $TAG -m "This is a test tag"
           git push origin $TAG
           echo "tag=$TAG" >> $GIT_OUTPUT
 
