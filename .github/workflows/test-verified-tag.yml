@@ -1,6 +1,10 @@
 name: Test create-verified-tag action
+
 on:
-  workflow_dispatch: {}
+  push:
+    branches:
+      - main
+      - master
 
 permissions:
   contents: write
@@ -11,7 +15,7 @@ jobs:
     permissions:
       contents: none
     outputs:
-      tag: ${{ steps.sign-tag.outputs.tag }}
+      tag: ${{ steps.tagging.outputs.tag }}
     steps:
       - name: Setup git for github app
         id: setup-git
@@ -26,18 +30,26 @@ jobs:
           token: ${{ steps.setup-git.outputs.token }}
           fetch-depth: 0
 
-      - name: Create signed tag
-        id: sign-tag
-        uses: EltonChou/create-verified-tag@main
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@v6
         with:
-          tag: "test-tag-${{ github.run_number }}"
-          message: "Test"
-          git-user-email: "plscd748@gmail.com"
-          git-user-name: ${{ steps.setup-git.outputs.user-name }}
-          # git-user-email: ${{ steps.setup-git.outputs.user-email }}
-          github-token: ${{ steps.setup-git.outputs.token }}
-          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          trust_level: 5
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+          git_tag_gpgsign: true
+          git_committer_name: ${{ steps.setup-git.outputs.user-name }}
+          git_committer_email: ${{ steps.setup-git.outputs.user-email }}
+
+      - name: Tagging
+        id: tagging
+        shell: bash
+        run: |
+          TAG=test-tag-${{ github.run_number }}
+          git tag -s $TAG
+          git push origin $TAG
+          echo "tag=$TAG" >> $GIT_OUTPUT
 
   verify-tag:
     runs-on: ubuntu-latest
